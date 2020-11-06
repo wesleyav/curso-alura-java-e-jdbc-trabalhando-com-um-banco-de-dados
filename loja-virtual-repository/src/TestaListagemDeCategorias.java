@@ -13,18 +13,13 @@ public class TestaListagemDeCategorias {
 
 		try (Connection connection = new ConnectionFactory().recuperarConexao()) {
 			CategoriaDAO categoriaDAO = new CategoriaDAO(connection);
-			List<Categoria> listaDeCategorias = categoriaDAO.listar();
+			List<Categoria> listaDeCategorias = categoriaDAO.listarComProdutos();
 			listaDeCategorias.stream().forEach(ct -> {
 				System.out.println(ct.getNome());
-				try {
-					for(Produto produto : new ProdutoDAO(connection).buscar(ct)) {
-						System.out.println(ct.getNome() + " - " + produto.getNome());
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
+				for (Produto produto : ct.getProdutos()) {
+					System.out.println(ct.getNome() + " - " + produto.getNome());
 				}
 			});
 		}
-
 	}
 }
