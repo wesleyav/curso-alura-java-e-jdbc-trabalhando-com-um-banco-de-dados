@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.alura.jdbc.factory.RuntimeException;
 import br.com.alura.jdbc.modelo.Categoria;
 import br.com.alura.jdbc.modelo.Produto;
 
@@ -18,23 +19,27 @@ public class CategoriaDAO {
 		this.connection = connection;
 	}
 
-	public List<Categoria> listar() throws SQLException {
-		List<Categoria> categorias = new ArrayList<>();
-		String sql = "SELECT ID, NOME FROM CATEGORIA";
+	public List<Categoria> listar() {
+		try {
+			List<Categoria> categorias = new ArrayList<>();
+			String sql = "SELECT ID, NOME FROM CATEGORIA";
 
-		try (PreparedStatement pstm = connection.prepareStatement(sql)) {
-			pstm.execute();
+			try (PreparedStatement pstm = connection.prepareStatement(sql)) {
+				pstm.execute();
 
-			try (ResultSet rst = pstm.getResultSet()) {
-				while (rst.next()) {
-					Categoria categoria = new Categoria(rst.getInt(1), rst.getString(2));
+				try (ResultSet rst = pstm.getResultSet()) {
+					while (rst.next()) {
+						Categoria categoria = new Categoria(rst.getInt(1), rst.getString(2));
 
-					categorias.add(categoria);
+						categorias.add(categoria);
+					}
 				}
 			}
+			return categorias;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
-		return categorias;
-	}
+		}
 
 	public List<Categoria> listarComProduto() throws SQLException {
 		Categoria ultima = null;
